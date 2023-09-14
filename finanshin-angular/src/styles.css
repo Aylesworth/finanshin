@@ -1,0 +1,16 @@
+.main-content {
+    margin-top: 100px;
+    margin-left: 300px;
+    margin-right: 50px;
+}
+
+.first-column-invisible th:nth-child(1),
+.first-column-invisible td:nth-child(1) {
+    display: none;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.align-right {
+    text-align: right;
+}

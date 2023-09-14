@@ -1,0 +1,11 @@
+<ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+    <button class="btn btn-primary ml-auto" type="button" (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })">
+        Log out
+    </button>
+</ng-container>
+
+<ng-template #loggedOut>
+    <button class="btn btn-primary ml-auto" type="button" (click)="auth.loginWithRedirect()">
+        Login
+    </button>
+</ng-template>

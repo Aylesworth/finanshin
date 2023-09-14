@@ -1,0 +1,54 @@
+<div class="main-content">
+    <h1>Your Incomes</h1>
+
+    <!-- Search Field -->
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Search for income">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button">Search</button>
+        </div>
+    </div>
+
+    <!-- Add Button -->
+    <app-add-income></app-add-income>
+
+    <div *ngIf="incomes.length > 0">
+    <!-- Table with Pagination -->
+        <table class="table first-column-invisible">
+            <thead>
+                <tr>
+                    <th width="0%">ID</th>
+                    <th>Date</th>
+                    <th class="align-right pe-5">Amount</th>
+                    <th class="ps-5">Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let income of incomes">
+                    <td>{{income.id}}</td>
+                    <td style="width: 15%;">{{income.date}}</td>
+                    <td class="align-right pe-5" style="width: 100px;">{{income.amount | currency:'VND'}}</td>
+                    <td class="ps-5">{{income.description}}</td>
+                    <td>
+                        <app-update-income [id]="income.id"></app-update-income>
+                        <button class="btn btn-danger mr-2" (click)="deleteIncome(income.id!)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ngb-pagination
+            [(page)]="pageNumber"
+            [pageSize]="pageSize"
+            [collectionSize]="collectionSize"
+            (pageChange)="getIncomes()"
+            [maxSize]="5"
+            [boundaryLinks]="true"
+        ></ngb-pagination>
+    </div>
+
+    <div *ngIf="incomes.length === 0" class="alert alert-warning mt-2" role="warning">
+        <p>There is no income yet.</p>
+    </div>
+</div>
