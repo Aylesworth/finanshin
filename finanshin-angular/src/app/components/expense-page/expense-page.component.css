@@ -1,0 +1,16 @@
+div.input-group.mb-3 {
+    width: 600px;
+}
+
+input {
+    width: 300px;
+}
+
+div.container > div.text-center {
+    font-size: 14pt;
+    width: 100px;
+}
+
+.invisible {
+    display: none;
+}

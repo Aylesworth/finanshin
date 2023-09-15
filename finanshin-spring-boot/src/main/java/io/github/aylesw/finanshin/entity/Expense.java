@@ -17,7 +17,7 @@ public class Expense {
 
     private Double amount;
 
-    private String message;
+    private String description;
 
     private LocalDate date;
 

@@ -3,7 +3,6 @@ package io.github.aylesw.finanshin.controller;
 import io.github.aylesw.finanshin.entity.Income;
 import io.github.aylesw.finanshin.service.IncomeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.DateTimeException;
 import java.time.YearMonth;
 
+import static io.github.aylesw.finanshin.config.AppConstants.DEFAULT_PAGE;
+import static io.github.aylesw.finanshin.config.AppConstants.DEFAULT_SIZE;
+
 @RestController
 @RequestMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -19,9 +21,6 @@ import java.time.YearMonth;
 public class IncomeController {
 
     private final IncomeService incomeService;
-
-    private final String DEFAULT_PAGE = "0";
-    private final String DEFAULT_SIZE = "20";
 
     @GetMapping("/users/{userEmail}/incomes")
     public ResponseEntity<Page<Income>> getIncomes(

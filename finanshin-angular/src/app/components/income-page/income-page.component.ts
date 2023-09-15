@@ -52,7 +52,6 @@ export class IncomePageComponent implements OnInit {
   }
 
   getIncomes() {
-    console.log(this.pageSize);
     this.incomeService.getIncomes(this.email, this.pageNumber, this.pageSize).subscribe(
       this.processResult()
     );

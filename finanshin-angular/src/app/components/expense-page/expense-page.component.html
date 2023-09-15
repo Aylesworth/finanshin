@@ -1,0 +1,151 @@
+<div class="main-content">
+    <h1>Your Expenses</h1>
+
+    <!-- Search Field -->
+    <div class="input-group mb-3">
+        <input #searchInput type="text" class="form-control" placeholder="Search for expense" (change)="searchKeyword = searchInput.value" (keyup.enter)="handleExpenseList()">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" (click)="handleExpenseList()">Search</button>
+        </div>
+    </div>
+
+    <!-- Year Month Filter -->
+    <div class="container d-flex justify-content-center align-items-center mt-2 mb-2">
+        <button class="btn btn-primary me-3" (click)="prevMonth()">&#8592;</button> <!-- Left arrow button -->
+        <div class="text-center">{{yearMonthDisplay}}</div> <!-- Centered text -->
+        <button class="btn btn-primary ms-3" (click)="nextMonth()">&#8594;</button> <!-- Right arrow button -->
+    </div>
+
+    <!-- Add Button -->
+    <div class="mb-3">
+        <button class="btn btn-success mr-2" (click)="openForm(content)">Add Expense</button>
+    </div>
+
+    <div *ngIf="expenses.length > 0">
+    <!-- Table with Pagination -->
+        <table class="table first-column-invisible">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th class="align-right pe-5">Amount</th>
+                    <th class="ps-5">Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let expense of expenses">
+                    <td>{{expense.id}}</td>
+                    <td style="width: 15%;">{{expense.date}}</td>
+                    <td style="width: 15%;">{{expense.category?.name}}</td>
+                    <td class="align-right pe-5" style="width: 10%;">{{expense.amount | currency:'VND'}}</td>
+                    <td class="ps-5" style="width: 40%;">{{expense.description}}</td>
+                    <td>
+                        <button class="btn btn-primary mr-2" (click)="openForm(content, expense)">Edit</button>
+                        <button class="btn btn-danger mr-2" (click)="deleteExpense(expense.id!)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-md-3">
+                <ngb-pagination
+                    [(page)]="pageNumber"
+                    [pageSize]="pageSize"
+                    [collectionSize]="collectionSize"
+                    (pageChange)="handleExpenseList()"
+                    [maxSize]="5"
+                    [boundaryLinks]="true"
+                ></ngb-pagination>
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-5 ps-5">
+                <label for="itemsPerPage">Items Per Page:</label>
+                <select id="itemsPerPage" class="form-select-sm ms-2" #itemsPerPage (change)="changePageSize(+itemsPerPage.value)">
+                    <option value="10">10</option>
+                    <option value="20" selected="true">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="expenses.length === 0" class="alert alert-warning mt-2" role="warning">
+        <p>No items found.</p>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" [textContent]="formName"></h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		<form [formGroup]="expenseFormGroup">
+            <div class="mb-3 row">
+                <div class="col-md-3"><label>Category</label></div>
+				<div class="col-md-9">
+                    <input #categoryInput formControlName="category" type="text" list="categoryList" (change)="checkCategory(categoryInput.value)" required/>
+                    <datalist id="categoryList" >
+                        <option *ngFor="let category of categories">
+                            {{category.name}}
+                        </option>
+                    </datalist>
+				</div>
+                <div *ngIf="amount.invalid && (amount.dirty || amount.touched)" class="invalid-feedback">
+                    <div *ngIf="amount.errors!['required']">
+                        Category is required
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 row" [ngClass]="{'invisible': !isNewCategory}">
+                <div class="col-md-3"><label>Category Desired Weight (%)</label></div>
+				<div class="col-md-9">
+                    <input formControlName="newCategoryWeight" type="number" required/>
+				</div>
+                <div *ngIf="amount.invalid && (amount.dirty || amount.touched)" class="invalid-feedback">
+                    <div *ngIf="amount.errors!['min'] || amount.errors!['max']">
+                        Weight must be between 0% and 100%
+                    </div>
+                </div>
+            </div>
+			<div class="mb-3 row">
+                <div class="col-md-3"><label>Amount</label></div>
+				<div class="col-md-9">
+                    <input formControlName="amount" type="number" required/>
+				</div>
+                <div *ngIf="amount.invalid && (amount.dirty || amount.touched)" class="invalid-feedback">
+                    <div *ngIf="amount.errors!['required']">
+                        Amount is required
+                    </div>
+                    <div *ngIf="amount.errors!['min']">
+                        Amount must not be negative
+                    </div>
+                </div>
+			</div>
+            <div class="mb-3 row">
+                <div class="col-md-3"><label>Description</label></div>
+				<div class="col-md-9">
+                    <input formControlName="description" type="text" />
+				</div>
+			</div>
+            <div class="mb-3 row">
+                <div class="col-md-3"><label>Date</label></div>
+				<div class="col-md-9">
+                    <input formControlName="date" type="date" required />
+				</div>
+                <div *ngIf="date.invalid && (date.dirty || date.touched)" class="invalid-feedback">
+                    <div *ngIf="date.errors!['required']">
+                        Date is required
+                    </div>
+                </div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')" [disabled]="expenseFormGroup.invalid">Save</button>
+	</div>
+</ng-template>
