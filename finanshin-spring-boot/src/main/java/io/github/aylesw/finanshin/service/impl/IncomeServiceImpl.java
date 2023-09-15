@@ -5,6 +5,7 @@ import io.github.aylesw.finanshin.exception.ResourceNotFoundException;
 import io.github.aylesw.finanshin.exception.UnauthorizedResourceAccessException;
 import io.github.aylesw.finanshin.repository.IncomeRepository;
 import io.github.aylesw.finanshin.service.IncomeService;
+import io.github.aylesw.finanshin.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,13 @@ public class IncomeServiceImpl implements IncomeService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
         return incomeRepository.findByUserEmailInRange(userEmail, fromDate, toDate, pageable);
+    }
+
+    @Override
+    public Page<Income> search(String userEmail, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
+        keyword = Utils.normalizeString(keyword);
+        return incomeRepository.findByUserEmailWithDescriptionContaining(userEmail, keyword, pageable);
     }
 
     @Override

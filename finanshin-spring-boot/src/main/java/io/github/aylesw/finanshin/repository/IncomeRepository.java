@@ -15,4 +15,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
 
     @Query("SELECT i FROM Income i WHERE i.userEmail = ?1 AND i.date BETWEEN ?2 AND ?3")
     Page<Income> findByUserEmailInRange(String userEmail, LocalDate fromDate, LocalDate toDate, Pageable pageable);
+
+    @Query("SELECT i FROM Income i WHERE i.userEmail = ?1 AND i.description LIKE %?2%")
+    Page<Income> findByUserEmailWithDescriptionContaining(String userEmail, String keyword, Pageable pageable);
 }

@@ -3,6 +3,7 @@ package io.github.aylesw.finanshin.controller;
 import io.github.aylesw.finanshin.entity.Income;
 import io.github.aylesw.finanshin.service.IncomeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,14 @@ public class IncomeController {
 
     private final IncomeService incomeService;
 
+    private final String DEFAULT_PAGE = "0";
+    private final String DEFAULT_SIZE = "20";
+
     @GetMapping("/users/{userEmail}/incomes")
     public ResponseEntity<Page<Income>> getIncomes(
             @PathVariable("userEmail") String userEmail,
-            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(value = "size", defaultValue = "20", required = false) int size,
+            @RequestParam(value = "page", defaultValue = DEFAULT_PAGE, required = false) int page,
+            @RequestParam(value = "size", defaultValue = DEFAULT_SIZE, required = false) int size,
             @RequestParam(value = "year", defaultValue = "0", required = false) int year,
             @RequestParam(value = "month", defaultValue = "0", required = false) int month
     ) {
@@ -33,6 +37,16 @@ public class IncomeController {
         } catch (DateTimeException e) {
             return ResponseEntity.ok(incomeService.getIncomes(userEmail, page, size));
         }
+    }
+
+    @GetMapping("/users/{userEmail}/incomes/search")
+    public ResponseEntity<Page<Income>> search(
+            @PathVariable("userEmail") String userEmail,
+            @RequestParam("q") String keyword,
+            @RequestParam(value = "page", defaultValue = DEFAULT_PAGE, required = false) int page,
+            @RequestParam(value = "size", defaultValue = DEFAULT_SIZE, required = false) int size
+    ) {
+        return ResponseEntity.ok(incomeService.search(userEmail, keyword, page, size));
     }
 
     @GetMapping("/users/{userEmail}/incomes/{id}")

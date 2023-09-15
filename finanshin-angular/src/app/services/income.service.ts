@@ -30,6 +30,20 @@ export class IncomeService {
     return res;
   }
 
+  getIncomesByMonth(email: string, year: number, month: number, pageNumber: number, pageSize: number): Observable<IncomesResponse> {
+    const url = `${environment.apiUrl}/users/${email}/incomes?page=${pageNumber - 1}&size=${pageSize}&year=${year}&month=${month}`;
+    this.lastPageNumber = pageNumber;
+    this.lastPageSize = pageSize;
+
+    const res = this.http.get<IncomesResponse>(url);
+
+    res.subscribe(
+      data => this.incomes.next(data.content)
+    );
+
+    return res;
+  }
+
   getIncome(email: string, incomeId: number): Observable<Income> {
     const url = `${environment.apiUrl}/users/${email}/incomes/${incomeId}`;
     return this.http.get<Income>(url);
@@ -54,6 +68,14 @@ export class IncomeService {
     this.http.delete(url).subscribe(
       () => this.getIncomes(email, this.lastPageNumber, this.lastPageSize)
     );
+  }
+
+  search(email: string, keyword: string, pageNumber: number, pageSize: number): Observable<IncomesResponse> {
+    const url = `${environment.apiUrl}/users/${email}/incomes/search?q=${keyword}`;
+    
+    const res = this.http.get<IncomesResponse>(url);
+    res.subscribe(data => this.incomes.next(data.content));
+    return res;
   }
 }
 

@@ -16,8 +16,6 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { AddIncomeComponent } from './components/add-income/add-income.component';
-import { UpdateIncomeComponent } from './components/update-income/update-income.component';
 
 const routes: Routes = [
   { path: 'incomes', component: IncomePageComponent }
@@ -29,9 +27,7 @@ const routes: Routes = [
     AuthButtonComponent,
     NavBarComponent,
     HeaderComponent,
-    IncomePageComponent,
-    AddIncomeComponent,
-    UpdateIncomeComponent
+    IncomePageComponent
   ],
   imports: [
     CommonModule,

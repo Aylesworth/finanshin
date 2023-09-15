@@ -9,6 +9,8 @@ public interface IncomeService {
 
     Page<Income> getIncomesByMonth(String userEmail, int year, int month, int page, int size);
 
+    Page<Income> search(String userEmail, String keyword, int page, int size);
+
     Income getIncome(String userEmail, Long incomeId);
 
     Income addIncome(String userEmail, Income income);

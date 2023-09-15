@@ -3,21 +3,30 @@
 
     <!-- Search Field -->
     <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Search for income">
+        <input #searchInput type="text" class="form-control" placeholder="Search for income" (change)="searchKeyword = searchInput.value" (keyup.enter)="handleIncomeList()">
         <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">Search</button>
+            <button class="btn btn-outline-secondary" type="button" (click)="handleIncomeList()">Search</button>
         </div>
     </div>
 
+    <!-- Year Month Filter -->
+    <div class="container d-flex justify-content-center align-items-center mt-2 mb-2">
+        <button class="btn btn-primary me-3" (click)="prevMonth()">&#8592;</button> <!-- Left arrow button -->
+        <div class="text-center">{{yearMonthDisplay}}</div> <!-- Centered text -->
+        <button class="btn btn-primary ms-3" (click)="nextMonth()">&#8594;</button> <!-- Right arrow button -->
+    </div>
+
     <!-- Add Button -->
-    <app-add-income></app-add-income>
+    <div class="mb-3">
+        <button class="btn btn-success mr-2" (click)="openForm(content)">Add Income</button>
+    </div>
 
     <div *ngIf="incomes.length > 0">
     <!-- Table with Pagination -->
         <table class="table first-column-invisible">
             <thead>
                 <tr>
-                    <th width="0%">ID</th>
+                    <th>ID</th>
                     <th>Date</th>
                     <th class="align-right pe-5">Amount</th>
                     <th class="ps-5">Description</th>
@@ -28,27 +37,86 @@
                 <tr *ngFor="let income of incomes">
                     <td>{{income.id}}</td>
                     <td style="width: 15%;">{{income.date}}</td>
-                    <td class="align-right pe-5" style="width: 100px;">{{income.amount | currency:'VND'}}</td>
-                    <td class="ps-5">{{income.description}}</td>
+                    <td class="align-right pe-5" style="width: 10%;">{{income.amount | currency:'VND'}}</td>
+                    <td class="ps-5" style="width: 40%;">{{income.description}}</td>
                     <td>
-                        <app-update-income [id]="income.id"></app-update-income>
+                        <button class="btn btn-primary mr-2" (click)="openForm(content, income)">Edit</button>
                         <button class="btn btn-danger mr-2" (click)="deleteIncome(income.id!)">Delete</button>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <ngb-pagination
-            [(page)]="pageNumber"
-            [pageSize]="pageSize"
-            [collectionSize]="collectionSize"
-            (pageChange)="getIncomes()"
-            [maxSize]="5"
-            [boundaryLinks]="true"
-        ></ngb-pagination>
+        <div class="row">
+            <div class="col-md-3">
+                <ngb-pagination
+                    [(page)]="pageNumber"
+                    [pageSize]="pageSize"
+                    [collectionSize]="collectionSize"
+                    (pageChange)="handleIncomeList()"
+                    [maxSize]="5"
+                    [boundaryLinks]="true"
+                ></ngb-pagination>
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-5 ps-5">
+                <label for="itemsPerPage">Items Per Page:</label>
+                <select id="itemsPerPage" class="form-select-sm ms-2" #itemsPerPage (change)="changePageSize(+itemsPerPage.value)">
+                    <option value="10">10</option>
+                    <option value="20" selected="true">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <div *ngIf="incomes.length === 0" class="alert alert-warning mt-2" role="warning">
-        <p>There is no income yet.</p>
+        <p>No items found.</p>
     </div>
 </div>
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" [textContent]="formName"></h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		<form [formGroup]="incomeFormGroup">
+			<div class="mb-3 row">
+                <div class="col-md-3"><label>Amount</label></div>
+				<div class="col-md-9">
+                    <input formControlName="amount" type="number" required/>
+				</div>
+                <div *ngIf="amount.invalid && (amount.dirty || amount.touched)" class="invalid-feedback">
+                    <div *ngIf="amount.errors!['required']">
+                        Amount is required
+                    </div>
+                    <div *ngIf="amount.errors!['min']">
+                        Amount must not be negative
+                    </div>
+                </div>
+			</div>
+            <div class="mb-3 row">
+                <div class="col-md-3"><label>Description</label></div>
+				<div class="col-md-9">
+                    <input formControlName="description" type="text" />
+				</div>
+			</div>
+            <div class="mb-3 row">
+                <div class="col-md-3"><label>Date</label></div>
+				<div class="col-md-9">
+                    <input formControlName="date" type="date" required/>
+				</div>
+                <div *ngIf="date.invalid && (date.dirty || date.touched)" class="invalid-feedback">
+                    <div *ngIf="date.errors!['required']">
+                        Date is required
+                    </div>
+                </div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')" [disabled]="incomeFormGroup.invalid">Save</button>
+	</div>
+</ng-template>
